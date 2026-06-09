@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -491,7 +491,8 @@ async function runSkyvernTask(instruction) {
   else if (t.includes('facebook')) url = 'https://www.facebook.com';
 
   try {
-    const res = await fetch(`${SKYVERN_API_URL}/tasks`, {
+    // Correct Skyvern Cloud API endpoint
+    const res = await fetch('https://api.skyvern.com/v1/tasks', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -500,80 +501,86 @@ async function runSkyvernTask(instruction) {
       body: JSON.stringify({
         prompt: instruction,
         url: url,
-        engine: 'skyvern-2.0'
+        engine: 'skyvern-1.0',
+        max_steps: 10
       })
     });
 
     if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`Skyvern error ${res.status}: ${err}`);
+      const errText = await res.text();
+      throw new Error(`Skyvern ${res.status}: ${errText}`);
     }
 
     const data = await res.json();
     currentTaskId = data.task_id || data.run_id || data.id;
     log('auto', `Task created. ID: ${currentTaskId}`);
-    speak("Browser task started. I will let you know when it is done.");
+    log('sys', `Skyvern is working... this may take 1-2 minutes`);
+    speak("Browser task started. I will let you know when it is done. This may take a minute or two.");
 
-    // poll for completion
     pollTaskStatus(currentTaskId);
 
   } catch(err) {
-    log('err', `Skyvern: ${err.message}`);
-    speak("There was an error sending the task to the browser agent. Check the console for details.");
+    log('err', `Skyvern error: ${err.message}`);
+    speak("There was an error with the browser agent. Check the console for details.");
     setStatus('READY','');
   }
 }
 
 // ── POLL TASK STATUS ─────────────────────────────
 async function pollTaskStatus(taskId) {
-  const maxTries = 30; // 5 minutes max
+  const maxTries = 36; // 6 minutes max (every 10s)
   let tries = 0;
 
   const interval = setInterval(async () => {
     tries++;
     if (tries > maxTries) {
       clearInterval(interval);
-      speak("The task is taking longer than expected. You can check Skyvern dashboard for results.");
+      speak("Task is taking longer than expected. Check your Skyvern dashboard at app dot skyvern dot com.");
       setStatus('READY','');
       return;
     }
 
     try {
-      const res = await fetch(`${SKYVERN_API_URL}/tasks/${taskId}`, {
+      const res = await fetch(`https://api.skyvern.com/v1/tasks/${taskId}`, {
         headers: { 'x-api-key': SKYVERN_API_KEY }
       });
+
+      if (!res.ok) { log('sys', `Polling... (attempt ${tries})`); return; }
+
       const data = await res.json();
       const status = (data.status || '').toLowerCase();
-      log('sys', `Task status: ${status}`);
+      log('sys', `Task status: ${status} (check ${tries})`);
 
-      if (status === 'completed' || status === 'success') {
+      if (['completed','success','finished'].includes(status)) {
         clearInterval(interval);
         setStatus('READY','');
-        const output = data.output || data.extracted_information || 'Task completed successfully.';
-        const msg = typeof output === 'object' ? JSON.stringify(output) : output;
-        speak(`Task done. ${msg.substring(0, 200)}`);
+        const out = data.output || data.extracted_information || data.failure_reason || 'Task completed.';
+        const msg = typeof out === 'object' ? JSON.stringify(out) : String(out);
+        speak(`Done! ${msg.substring(0, 250)}`);
         log('agent', `Result: ${msg}`);
 
-      } else if (status === 'failed' || status === 'terminated') {
+      } else if (['failed','terminated','cancelled'].includes(status)) {
         clearInterval(interval);
         setStatus('READY','');
-        speak("The browser task failed. Please check the Skyvern dashboard for more details.");
-        log('err', `Task failed: ${JSON.stringify(data)}`);
+        const reason = data.failure_reason || 'Unknown reason';
+        speak(`The browser task failed. Reason: ${reason}`);
+        log('err', `Task failed: ${reason}`);
       }
     } catch(e) {
-      log('err', `Status check error: ${e.message}`);
+      log('sys', `Polling attempt ${tries}...`);
     }
-  }, 10000); // check every 10 seconds
+  }, 10000);
 }
 
 async function checkTaskStatus(taskId) {
   speak("Checking task status...");
   try {
-    const res = await fetch(`${SKYVERN_API_URL}/tasks/${taskId}`, {
+    const res = await fetch(`https://api.skyvern.com/v1/tasks/${taskId}`, {
       headers: { 'x-api-key': SKYVERN_API_KEY }
     });
     const data = await res.json();
     speak(`Task status is: ${data.status || 'unknown'}`);
+    log('sys', JSON.stringify(data));
   } catch(e) {
     speak("Could not check task status.");
   }
@@ -672,7 +679,5 @@ function esc(s) {
 
 if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = ()=>{};
 </script>
-</body>
-</html>
 </body>
 </html>
