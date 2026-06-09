@@ -386,7 +386,7 @@ body {
 <script>
 // ── CONFIG ──────────────────────────────────────
 // Skyvern API key — set this to your key from app.skyvern.com/settings
-const SKYVERN_API_KEY = 'PASTE_YOUR_SKYVERN_API_KEY_HERE'; // ← REPLACE THIS WITH YOUR KEY
+const SKYVERN_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ5MjU5OTA5NjksInN1YiI6Im9fNTM4MzY0NTYxMjM4ODY0MTU2In0.5L7txy2sZjm2fFcgROP0vYJACIsdcV8m7DbCAqxwuAQ";
 const SKYVERN_API_URL = 'https://api.skyvern.com/v1';
 
 let recognition = null;
@@ -469,7 +469,7 @@ function handleCommand(raw) {
 
 // ── SKYVERN BROWSER CONTROL ──────────────────────
 async function runSkyvernTask(instruction) {
-  if (SKYVERN_API_KEY === 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ5MjU5OTA5NjksInN1YiI6Im9fNTM4MzY0NTYxMjM4ODY0MTU2In0.5L7txy2sZjm2fFcgROP0vYJACIsdcV8m7DbCAqxwuAQ) {
+  if (SKYVERN_API_KEY === 'YOUR_SKYVERN_API_KEY') {
     speak("Please set your Skyvern API key in the HTML file first. Get it free from app dot skyvern dot com.");
     log('err', 'Skyvern API key not set. Edit SKYVERN_API_KEY in the HTML.');
     return;
@@ -672,5 +672,7 @@ function esc(s) {
 
 if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = ()=>{};
 </script>
+</body>
+</html>
 </body>
 </html>
