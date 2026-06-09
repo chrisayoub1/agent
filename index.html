@@ -1,32 +1,30 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>V-AGENT | Voice Browser Automation</title>
-
+<title>V-AGENT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <style>
 :root {
   --bg: #030712;
   --panel: #0c111d;
-  --panel2: #111827;
   --border: #1f2937;
-  --border2: #374151;
   --primary: #7c3aed;
   --primary-light: #a78bfa;
-  --primary-glow: rgba(124,58,237,0.3);
+  --primary-glow: rgba(124,58,237,0.35);
   --accent: #06b6d4;
-  --accent-glow: rgba(6,182,212,0.2);
+  --accent-glow: rgba(6,182,212,0.25);
   --green: #10b981;
   --red: #ef4444;
   --text: #f9fafb;
   --text2: #9ca3af;
-  --text3: #6b7280;
+  --text3: #4b5563;
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -34,295 +32,140 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family: 'IBM Plex Mono', monospace;
   height: 100vh;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
 
-/* ─── SIDEBAR ─────────────────────────────────── */
-.sidebar {
-  width: 300px;
-  min-width: 300px;
-  background: var(--panel);
-  border-right: 1px solid var(--border);
+/* ── TOP BAR ── */
+.topbar {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  padding: 24px 20px;
-  gap: 20px;
-  overflow-y: auto;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--border);
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.logo-icon {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.logo-text h2 {
   font-family: 'Orbitron', monospace;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--text);
-}
-
-.logo-text span {
-  font-size: 10px;
-  color: var(--text3);
-  font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: 1px;
-}
-
-.sidebar-section h4 {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--text3);
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.field {
-  margin-bottom: 14px;
-}
-
-.field label {
-  display: block;
-  font-size: 12px;
-  color: var(--text2);
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-.field input,
-.field select {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border2);
-  background: var(--panel2);
-  color: var(--text);
-  font-size: 13px;
-  font-family: 'IBM Plex Mono', monospace;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.field input:focus,
-.field select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-glow);
-}
-
-.field select option { background: var(--panel2); }
-
-.btn-save {
-  width: 100%;
-  padding: 11px;
-  border: none;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--primary), #6d28d9);
-  color: white;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-  transition: opacity 0.2s, transform 0.1s;
-}
-
-.btn-save:hover { opacity: 0.9; }
-.btn-save:active { transform: scale(0.98); }
-
-.server-status {
-  margin-top: auto;
-  padding: 12px;
-  border-radius: 10px;
-  background: var(--panel2);
-  border: 1px solid var(--border);
-}
-
-.server-status-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-}
-
-.server-status-row span:first-child { color: var(--text3); }
-.server-status-row .badge {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 20px;
-  background: rgba(16,185,129,0.15);
-  color: var(--green);
-  border: 1px solid rgba(16,185,129,0.3);
-}
-
-/* ─── MAIN ─────────────────────────────────────── */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 28px;
-  border-bottom: 1px solid var(--border);
-  background: var(--panel);
+  letter-spacing: 4px;
+  color: var(--primary-light);
 }
 
 .status-pill {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  background: var(--panel2);
-  border: 1px solid var(--border2);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 11px;
+  color: var(--text2);
+  letter-spacing: 1px;
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   background: var(--green);
   box-shadow: 0 0 8px var(--green);
+  flex-shrink: 0;
 }
-
 .dot.listening {
   background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
-  animation: pulse 1s infinite;
+  box-shadow: 0 0 10px var(--accent);
+  animation: blink 1s infinite;
 }
-
 .dot.speaking {
   background: var(--primary-light);
-  box-shadow: 0 0 8px var(--primary-light);
-  animation: pulse 0.6s infinite;
+  box-shadow: 0 0 10px var(--primary-light);
+  animation: blink 0.5s infinite;
+}
+@keyframes blink {
+  0%,100%{opacity:1;} 50%{opacity:0.3;}
 }
 
-@keyframes pulse {
-  0%,100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.3); }
-}
-
-.topbar-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.icon-btn {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  background: var(--panel2);
-  color: var(--text2);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  transition: all 0.2s;
-}
-
-.icon-btn:hover { border-color: var(--primary); color: var(--primary-light); }
-
-/* ─── AVATAR ZONE ───────────────────────────────── */
-.avatar-zone {
+/* ── AVATAR CENTER ── */
+.center {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 32px;
   position: relative;
-  overflow: hidden;
 }
 
-.avatar-zone::before {
+/* ambient glow behind face */
+.center::before {
   content: '';
   position: absolute;
-  width: 400px;
-  height: 400px;
+  width: 420px; height: 420px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--primary-glow) 0%, transparent 65%);
   pointer-events: none;
 }
 
-.avatar-ring {
+/* rotating rings */
+.ring-wrap {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
-.avatar-ring::before {
+.ring-wrap::before {
   content: '';
   position: absolute;
-  width: 310px;
-  height: 310px;
+  width: 320px; height: 320px;
   border-radius: 50%;
-  border: 1px solid var(--border2);
-  animation: rotatering 20s linear infinite;
+  border: 1px solid rgba(124,58,237,0.25);
+  animation: spin 18s linear infinite;
 }
-
-.avatar-ring::after {
+.ring-wrap::after {
   content: '';
   position: absolute;
-  width: 350px;
-  height: 350px;
+  width: 370px; height: 370px;
   border-radius: 50%;
-  border: 1px dashed var(--border);
-  animation: rotatering 30s linear infinite reverse;
+  border: 1px dashed rgba(124,58,237,0.12);
+  animation: spin 28s linear infinite reverse;
 }
-
-@keyframes rotatering {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 #avatar-svg {
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 0 20px var(--primary-glow));
+  filter: drop-shadow(0 0 22px var(--primary-glow));
   transition: filter 0.3s;
 }
-
 #avatar-svg.talking {
-  filter: drop-shadow(0 0 30px rgba(124,58,237,0.6));
-  animation: avatalpulse 0.4s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 38px rgba(124,58,237,0.65));
+  animation: breathe 0.4s ease-in-out infinite alternate;
 }
-
-@keyframes avatalpulse {
+@keyframes breathe {
   from { transform: scale(1); }
-  to { transform: scale(1.02); }
+  to   { transform: scale(1.025); }
 }
 
-/* Mic button */
-.mic-wrapper {
+/* ── AGENT TEXT BUBBLE ── */
+#agent-bubble {
+  font-size: 13px;
+  color: var(--primary-light);
+  letter-spacing: 0.5px;
+  max-width: 480px;
+  text-align: center;
+  min-height: 20px;
+  line-height: 1.6;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+#agent-bubble.visible { opacity: 1; }
+
+/* ── MIC BUTTON ── */
+.mic-area {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -331,293 +174,434 @@ body {
 }
 
 #btn-listen {
-  width: 72px;
-  height: 72px;
+  width: 76px; height: 76px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), #6d28d9);
+  background: linear-gradient(135deg, var(--primary), #5b21b6);
   color: white;
-  font-size: 26px;
+  font-size: 28px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 0 var(--primary-glow);
   transition: transform 0.15s, box-shadow 0.3s;
+  box-shadow: 0 0 0 0 var(--primary-glow);
 }
-
-#btn-listen:hover { transform: scale(1.06); }
-
+#btn-listen:hover { transform: scale(1.07); }
 #btn-listen.listening {
-  background: linear-gradient(135deg, var(--accent), #0891b2);
-  box-shadow: 0 0 0 12px rgba(6,182,212,0.15), 0 0 30px var(--accent-glow);
-  animation: micpulse 1.2s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--accent), #0e7490);
+  animation: micring 1.3s ease-in-out infinite;
+}
+@keyframes micring {
+  0%,100% { box-shadow: 0 0 0 6px rgba(6,182,212,0.15); }
+  50%      { box-shadow: 0 0 0 18px rgba(6,182,212,0.04); }
 }
 
-@keyframes micpulse {
-  0%,100% { box-shadow: 0 0 0 8px rgba(6,182,212,0.15), 0 0 20px var(--accent-glow); }
-  50% { box-shadow: 0 0 0 18px rgba(6,182,212,0.05), 0 0 40px var(--accent-glow); }
-}
-
-#mic-label-text {
-  font-size: 12px;
-  color: var(--text3);
-  font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: 0.5px;
-}
-
-/* Visualizer */
-#audio-visualizer {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  height: 32px;
-}
-
-#audio-visualizer .bar {
-  width: 4px;
-  background: var(--primary-light);
-  border-radius: 2px;
-  height: 6px;
-  transition: height 0.1s;
-}
-
-#audio-visualizer.active .bar:nth-child(1) { animation: vis 0.6s ease infinite; }
-#audio-visualizer.active .bar:nth-child(2) { animation: vis 0.8s ease 0.1s infinite; }
-#audio-visualizer.active .bar:nth-child(3) { animation: vis 0.5s ease 0.2s infinite; }
-#audio-visualizer.active .bar:nth-child(4) { animation: vis 0.9s ease 0.05s infinite; }
-#audio-visualizer.active .bar:nth-child(5) { animation: vis 0.7s ease 0.15s infinite; }
-
-@keyframes vis {
-  0%,100% { height: 6px; }
-  50% { height: 28px; }
-}
-
-/* ─── CONSOLE ───────────────────────────────────── */
-.console-panel {
-  height: 220px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-}
-
-.console-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.console-header span {
+#mic-label {
   font-size: 11px;
   color: var(--text3);
-  font-family: 'IBM Plex Mono', monospace;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
-.console-clear {
-  font-size: 11px;
+/* ── VISUALIZER ── */
+#visualizer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+}
+#visualizer .b {
+  width: 4px;
+  background: var(--primary-light);
+  border-radius: 2px;
+  height: 5px;
+}
+#visualizer.on .b:nth-child(1){animation:v .55s ease infinite;}
+#visualizer.on .b:nth-child(2){animation:v .75s ease .08s infinite;}
+#visualizer.on .b:nth-child(3){animation:v .5s ease .18s infinite;}
+#visualizer.on .b:nth-child(4){animation:v .85s ease .04s infinite;}
+#visualizer.on .b:nth-child(5){animation:v .65s ease .12s infinite;}
+@keyframes v { 0%,100%{height:5px;} 50%{height:26px;} }
+
+/* ── CONSOLE ── */
+.console {
+  width: 100%;
+  height: 180px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+.console-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.console-head span {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.console-head button {
+  font-size: 10px;
   color: var(--text3);
   background: none;
   border: none;
   cursor: pointer;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: inherit;
+  letter-spacing: 1px;
   transition: color 0.2s;
 }
-
-.console-clear:hover { color: var(--primary-light); }
+.console-head button:hover { color: var(--primary-light); }
 
 .console-body {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 20px;
+  padding: 10px 24px;
   scrollbar-width: thin;
-  scrollbar-color: var(--border2) transparent;
+  scrollbar-color: #1f2937 transparent;
 }
 
-.log-entry {
+.log {
   display: flex;
   gap: 10px;
-  padding: 3px 0;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  line-height: 1.5;
-  border-bottom: 1px solid transparent;
+  font-size: 11px;
+  padding: 2px 0;
+  line-height: 1.6;
 }
+.log .ts { color: var(--text3); flex-shrink: 0; }
+.log.sys .msg  { color: #6b7280; }
+.log.user .msg { color: var(--accent); }
+.log.agent .msg{ color: var(--primary-light); }
+.log.auto .msg { color: #c4b5fd; }
+.log.err .msg  { color: var(--red); }
 
-.log-entry .timestamp { color: var(--text3); flex-shrink: 0; }
-.log-entry.system .message { color: var(--text2); }
-.log-entry.user .message { color: var(--accent); }
-.log-entry.agent .message { color: var(--primary-light); }
-.log-entry.error .message { color: var(--red); }
-.log-entry.glow-purple .message { color: #c4b5fd; }
-
-/* ─── TOAST ─────────────────────────────────────── */
-.toast {
+/* ── TOAST ── */
+#toast {
   display: none;
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px; right: 20px;
   background: var(--green);
   color: white;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 13px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: 600;
   z-index: 999;
-  box-shadow: 0 4px 20px rgba(16,185,129,0.4);
 }
 </style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
+<!-- TOP -->
+<header class="topbar">
+  <div class="logo">V-AGENT</div>
+  <div class="status-pill">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-txt">READY</span>
+  </div>
+</header>
 
-  <div class="logo">
-    <div class="logo-icon"><i class="fa-solid fa-microchip"></i></div>
-    <div class="logo-text">
-      <h2>V-AGENT</h2>
-      <span>VOICE AUTOMATION</span>
-    </div>
+<!-- CENTER -->
+<div class="center">
+
+  <div class="ring-wrap">
+    <svg id="avatar-svg" width="270" height="270" viewBox="0 0 400 400">
+      <defs>
+        <radialGradient id="fg" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#1e1b4b"/>
+          <stop offset="100%" stop-color="#060412"/>
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- face -->
+      <circle cx="200" cy="200" r="152" fill="url(#fg)" stroke="#7c3aed" stroke-width="1.5"/>
+      <circle cx="200" cy="200" r="152" fill="none" stroke="#a78bfa" stroke-width="0.5" opacity="0.3"/>
+
+      <!-- left eye -->
+      <g filter="url(#glow)">
+        <circle cx="150" cy="178" r="23" fill="#12103a" stroke="#7c3aed" stroke-width="1.5"/>
+        <circle cx="150" cy="178" r="13" fill="#7c3aed"/>
+        <circle cx="150" cy="178" r="5"  fill="#c4b5fd"/>
+        <circle cx="156" cy="173" r="3"  fill="white" opacity="0.75"/>
+      </g>
+
+      <!-- right eye -->
+      <g filter="url(#glow)">
+        <circle cx="250" cy="178" r="23" fill="#12103a" stroke="#7c3aed" stroke-width="1.5"/>
+        <circle cx="250" cy="178" r="13" fill="#7c3aed"/>
+        <circle cx="250" cy="178" r="5"  fill="#c4b5fd"/>
+        <circle cx="256" cy="173" r="3"  fill="white" opacity="0.75"/>
+      </g>
+
+      <!-- mouth idle -->
+      <path id="m-idle" d="M163 255 Q200 278 237 255" stroke="#7c3aed" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <!-- mouth talking -->
+      <ellipse id="m-talk" cx="200" cy="263" rx="28" ry="13" fill="#7c3aed" opacity="0"/>
+
+      <!-- tiny accent dots -->
+      <circle cx="200" cy="125" r="4" fill="#06b6d4" opacity="0.5"/>
+      <line x1="178" y1="125" x2="155" y2="114" stroke="#06b6d4" stroke-width="1" opacity="0.25"/>
+      <line x1="222" y1="125" x2="245" y2="114" stroke="#06b6d4" stroke-width="1" opacity="0.25"/>
+    </svg>
   </div>
 
-  <div class="sidebar-section">
-    <h4>Voice Settings</h4>
-    <div class="field">
-      <label>Voice Model</label>
-      <select id="voice-select">
-        <option value="female-yujie">Female — Yujie</option>
-        <option value="female-tianmei">Female — Tianmei</option>
-        <option value="male-qn-qingse">Male — Qingse</option>
-      </select>
-    </div>
+  <!-- what the agent says -->
+  <div id="agent-bubble"></div>
+
+  <!-- mic -->
+  <div class="mic-area">
+    <button id="btn-listen" onclick="toggleListening()">
+      <i id="mic-icon" class="fa-solid fa-microphone"></i>
+    </button>
+    <span id="mic-label">CLICK TO SPEAK</span>
   </div>
 
-  <div class="sidebar-section">
-    <h4>Browser Config</h4>
-    <div class="field">
-      <label>Automation API URL</label>
-      <input id="local-api-url" value="http://localhost:3500" placeholder="http://localhost:3500">
-    </div>
-    <div class="field">
-      <label>Browser Profile ID</label>
-      <input id="browser-profile-id" placeholder="Enter profile ID">
-    </div>
+  <!-- visualizer -->
+  <div id="visualizer">
+    <div class="b"></div><div class="b"></div><div class="b"></div>
+    <div class="b"></div><div class="b"></div>
   </div>
 
-  <button class="btn-save" onclick="saveSettings()">
-    <i class="fa-solid fa-floppy-disk" style="margin-right:8px"></i>Save Settings
-  </button>
-
-  <div class="server-status">
-    <div class="server-status-row">
-      <span>API Server</span>
-      <span class="badge">CONNECTED</span>
-    </div>
-  </div>
-
-</aside>
-
-<!-- MAIN -->
-<main class="main">
-
-  <header class="topbar">
-    <div class="status-pill">
-      <span class="dot" id="status-pulse"></span>
-      <span id="agent-status-text">System Ready</span>
-    </div>
-    <div class="topbar-actions">
-      <button class="icon-btn" title="Clear console" onclick="clearConsole()">
-        <i class="fa-solid fa-trash-can"></i>
-      </button>
-    </div>
-  </header>
-
-  <!-- AVATAR -->
-  <div class="avatar-zone">
-
-    <div class="avatar-ring">
-      <svg id="avatar-svg" width="260" height="260" viewBox="0 0 400 400">
-        <defs>
-          <radialGradient id="faceGrad" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stop-color="#1e1b4b"/>
-            <stop offset="100%" stop-color="#0f0a1e"/>
-          </radialGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-
-        <!-- Face -->
-        <circle cx="200" cy="200" r="150" fill="url(#faceGrad)" stroke="#7c3aed" stroke-width="2"/>
-        <circle cx="200" cy="200" r="150" fill="none" stroke="#a78bfa" stroke-width="0.5" opacity="0.4"/>
-
-        <!-- Eyes -->
-        <g class="eye-left-group" filter="url(#glow)">
-          <circle cx="150" cy="180" r="22" fill="#1e1b4b" stroke="#7c3aed" stroke-width="1.5"/>
-          <circle cx="150" cy="180" r="12" fill="#7c3aed"/>
-          <circle cx="150" cy="180" r="5" fill="#a78bfa"/>
-          <circle cx="155" cy="175" r="3" fill="white" opacity="0.7"/>
-        </g>
-
-        <g class="eye-right-group" filter="url(#glow)">
-          <circle cx="250" cy="180" r="22" fill="#1e1b4b" stroke="#7c3aed" stroke-width="1.5"/>
-          <circle cx="250" cy="180" r="12" fill="#7c3aed"/>
-          <circle cx="250" cy="180" r="5" fill="#a78bfa"/>
-          <circle cx="255" cy="175" r="3" fill="white" opacity="0.7"/>
-        </g>
-
-        <!-- Mouth (idle) -->
-        <path id="mouth-idle" d="M165 255 Q200 275 235 255" stroke="#7c3aed" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <!-- Mouth (talking) -->
-        <ellipse id="mouth-talk" cx="200" cy="262" rx="30" ry="12" fill="#7c3aed" opacity="0" />
-
-        <!-- Decorative details -->
-        <circle cx="200" cy="130" r="4" fill="#06b6d4" opacity="0.6"/>
-        <line x1="180" y1="130" x2="160" y2="120" stroke="#06b6d4" stroke-width="1" opacity="0.3"/>
-        <line x1="220" y1="130" x2="240" y2="120" stroke="#06b6d4" stroke-width="1" opacity="0.3"/>
-      </svg>
-    </div>
-
-    <div class="mic-wrapper">
-      <button id="btn-listen" onclick="toggleListening()">
-        <i id="mic-icon" class="fa-solid fa-microphone"></i>
-      </button>
-      <span id="mic-label-text">Click to speak to Agent</span>
-    </div>
-
-    <div id="audio-visualizer">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-    </div>
-
-  </div>
-
-  <!-- CONSOLE -->
-  <div class="console-panel">
-    <div class="console-header">
-      <span>// System Console</span>
-      <button class="console-clear" onclick="clearConsole()">Clear</button>
-    </div>
-    <div id="console-logs" class="console-body"></div>
-  </div>
-
-</main>
-
-<div id="toast" class="toast">
-  <i class="fa-solid fa-check" style="margin-right:8px"></i>Settings Saved
 </div>
 
-<script src="app.js"></script>
+<!-- CONSOLE -->
+<div class="console">
+  <div class="console-head">
+    <span>// console</span>
+    <button onclick="clearLog()">clear</button>
+  </div>
+  <div id="logs" class="console-body"></div>
+</div>
 
+<div id="toast">✓ Done</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────
+const MINIMAX_GROUP_ID = '2063232349390246288';
+const VOICE_ID = 'female-yujie'; // fixed, no picker
+
+let recognition = null;
+let isListening  = false;
+let audioPlayer  = null;
+
+// ── INIT ─────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  initSpeech();
+  log('sys', 'V-AGENT online. Click mic to speak.');
+  // greet on load
+  setTimeout(() => speak("Hello! I'm your voice agent. I'm ready. Just tell me what to do."), 800);
+});
+
+// ── SPEECH RECOGNITION ──────────────────────────
+function initSpeech() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { log('err','Speech recognition not supported. Use Chrome or Edge.'); return; }
+
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+
+  recognition.onstart  = () => { isListening=true;  setStatus('LISTENING','listening'); setMic(true);  log('sys','Listening...'); };
+  recognition.onend    = () => { isListening=false; setStatus('READY','');      setMic(false); };
+  recognition.onerror  = (e) => { log('err',`Mic error: ${e.error}`); setMic(false); setStatus('READY',''); };
+  recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    log('user', `You: "${text}"`);
+    handleCommand(text);
+  };
+}
+
+function toggleListening() {
+  if (!recognition) { alert('Use Chrome or Edge for voice support.'); return; }
+  if (isListening) {
+    recognition.stop();
+  } else {
+    if (audioPlayer) { audioPlayer.pause(); stopAnim(); }
+    window.speechSynthesis.cancel();
+    recognition.start();
+  }
+}
+
+// ── COMMAND HANDLER ──────────────────────────────
+function handleCommand(raw) {
+  const t = raw.toLowerCase();
+  setStatus('THINKING','');
+
+  let reply = '';
+
+  if (t.includes('hello') || t.includes('hi') || t.includes('hey')) {
+    reply = "Hey! I'm here. What do you need me to do?";
+
+  } else if (t.includes('your name') || t.includes('who are you')) {
+    reply = "I'm V-Agent, your personal voice automation assistant.";
+
+  } else if (t.includes('what can you do') || t.includes('help')) {
+    reply = "I can open websites, search the web, control your browser profiles, and answer your questions. Just tell me what you need.";
+
+  } else if (t.includes('open') && t.includes('google')) {
+    reply = "Opening Google now.";
+    log('auto', 'Action → google.com');
+    window.open('https://google.com', '_blank');
+
+  } else if (t.includes('open') && t.includes('linkedin')) {
+    reply = "Opening LinkedIn for you.";
+    log('auto', 'Action → linkedin.com');
+    window.open('https://linkedin.com', '_blank');
+
+  } else if (t.includes('open') && t.includes('youtube')) {
+    reply = "Opening YouTube.";
+    log('auto', 'Action → youtube.com');
+    window.open('https://youtube.com', '_blank');
+
+  } else if (t.includes('open') && t.includes('twitter') || t.includes('open') && t.includes('x.com')) {
+    reply = "Opening X for you.";
+    log('auto', 'Action → x.com');
+    window.open('https://x.com', '_blank');
+
+  } else if (t.includes('search') || t.includes('look up') || t.includes('find')) {
+    const query = raw.replace(/search|look up|find/gi,'').trim();
+    reply = `Searching Google for: ${query}`;
+    log('auto', `Action → Google search: ${query}`);
+    window.open(`https://google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+
+  } else if (t.includes('what time') || t.includes('current time')) {
+    const now = new Date().toLocaleTimeString();
+    reply = `The current time is ${now}.`;
+
+  } else if (t.includes('what day') || t.includes('today') && t.includes('date')) {
+    const now = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    reply = `Today is ${now}.`;
+
+  } else if (t.includes('stop') || t.includes('quiet') || t.includes('shut up')) {
+    if (audioPlayer) { audioPlayer.pause(); stopAnim(); }
+    window.speechSynthesis.cancel();
+    setStatus('READY','');
+    return;
+
+  } else if (t.includes('clear') && t.includes('console')) {
+    clearLog();
+    reply = "Console cleared.";
+
+  } else {
+    reply = `Got it. You said: "${raw}". I'm working on a more advanced response. For now I can open sites and search for things — just say open or search followed by what you need.`;
+  }
+
+  speak(reply);
+}
+
+// ── SPEAK via Vercel proxy → Minimax ────────────
+async function speak(text) {
+  setStatus('SPEAKING','speaking');
+  log('agent', `Agent: "${text}"`);
+  showBubble(text);
+
+  try {
+    const res = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, voiceId: VOICE_ID })
+    });
+
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+
+    if (audioPlayer) audioPlayer.pause();
+    audioPlayer = new Audio(url);
+    audioPlayer.onplay   = () => startAnim();
+    audioPlayer.onended  = () => { stopAnim(); setStatus('READY',''); };
+    audioPlayer.onerror  = () => { stopAnim(); fallbackSpeak(text); };
+    audioPlayer.play();
+
+  } catch(err) {
+    log('err', `Voice API: ${err.message} — using browser TTS`);
+    fallbackSpeak(text);
+  }
+}
+
+function fallbackSpeak(text) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const voices = window.speechSynthesis.getVoices();
+  const fv = voices.find(v => /female|samantha|zira|hazel|google us/i.test(v.name));
+  if (fv) u.voice = fv;
+  u.onstart = () => startAnim();
+  u.onend   = () => { stopAnim(); setStatus('READY',''); };
+  window.speechSynthesis.speak(u);
+}
+
+// ── ANIMATIONS ───────────────────────────────────
+function startAnim() {
+  document.getElementById('avatar-svg').classList.add('talking');
+  document.getElementById('visualizer').classList.add('on');
+  document.getElementById('m-idle').setAttribute('opacity','0');
+  document.getElementById('m-talk').setAttribute('opacity','1');
+}
+function stopAnim() {
+  document.getElementById('avatar-svg').classList.remove('talking');
+  document.getElementById('visualizer').classList.remove('on');
+  document.getElementById('m-idle').setAttribute('opacity','1');
+  document.getElementById('m-talk').setAttribute('opacity','0');
+}
+
+// ── UI HELPERS ───────────────────────────────────
+function setMic(active) {
+  const btn  = document.getElementById('btn-listen');
+  const icon = document.getElementById('mic-icon');
+  const lbl  = document.getElementById('mic-label');
+  if (active) {
+    btn.classList.add('listening');
+    icon.className = 'fa-solid fa-microphone-slash';
+    lbl.textContent = 'LISTENING... CLICK TO STOP';
+  } else {
+    btn.classList.remove('listening');
+    icon.className = 'fa-solid fa-microphone';
+    lbl.textContent = 'CLICK TO SPEAK';
+  }
+}
+
+function setStatus(text, cls) {
+  document.getElementById('status-txt').textContent = text;
+  const d = document.getElementById('status-dot');
+  d.className = 'dot' + (cls ? ' '+cls : '');
+}
+
+function showBubble(text) {
+  const b = document.getElementById('agent-bubble');
+  b.textContent = text;
+  b.classList.add('visible');
+}
+
+// ── CONSOLE ──────────────────────────────────────
+function log(type, msg) {
+  const el   = document.getElementById('logs');
+  const time = new Date().toLocaleTimeString();
+  const row  = document.createElement('div');
+  row.className = `log ${type}`;
+  row.innerHTML = `<span class="ts">[${time}]</span><span class="msg">${esc(msg)}</span>`;
+  el.appendChild(row);
+  el.scrollTop = el.scrollHeight;
+}
+function clearLog() {
+  document.getElementById('logs').innerHTML = '';
+  log('sys','Console cleared.');
+}
+function esc(s) {
+  return (s||'').replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]||c));
+}
+
+if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = ()=>{};
+</script>
 </body>
 </html>
