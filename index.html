@@ -1,0 +1,253 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice Browser Agent</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+:root{
+--bg:#020617;
+--panel:#0f172a;
+--border:#1e293b;
+--primary:#8b5cf6;
+--text:#f8fafc;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:var(--bg);
+color:var(--text);
+font-family:"Plus Jakarta Sans",sans-serif;
+height:100vh;
+overflow:hidden;
+}
+
+.agent-dashboard{
+display:grid;
+grid-template-columns:320px 1fr;
+height:100vh;
+}
+
+.settings-sidebar{
+background:#08111f;
+border-right:1px solid var(--border);
+padding:24px;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:12px;
+margin-bottom:30px;
+}
+
+.logo i{
+font-size:28px;
+color:var(--primary);
+}
+
+.logo h2{
+font-family:Orbitron,sans-serif;
+}
+
+.form-item{
+margin-bottom:18px;
+}
+
+.form-item label{
+display:block;
+margin-bottom:6px;
+font-size:14px;
+}
+
+.api-input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid var(--border);
+background:#111827;
+color:white;
+}
+
+.btn{
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+background:var(--primary);
+color:white;
+font-weight:700;
+}
+
+.agent-main{
+display:flex;
+flex-direction:column;
+}
+
+.workspace-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 30px;
+border-bottom:1px solid var(--border);
+}
+
+.status-indicator{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.pulse-dot{
+width:12px;
+height:12px;
+border-radius:50%;
+background:#22c55e;
+}
+
+.avatar-canvas-wrapper{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+}
+
+.btn-mic{
+width:90px;
+height:90px;
+border:none;
+border-radius:50%;
+background:var(--primary);
+color:white;
+font-size:32px;
+cursor:pointer;
+margin-top:20px;
+}
+
+.console-card{
+height:250px;
+border-top:1px solid var(--border);
+padding:20px;
+}
+
+.console-body{
+height:180px;
+overflow:auto;
+background:#0b1220;
+padding:15px;
+border-radius:12px;
+}
+
+.toast-notification{
+display:none;
+position:fixed;
+bottom:20px;
+right:20px;
+background:#22c55e;
+padding:12px 20px;
+border-radius:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="agent-dashboard">
+
+<aside class="settings-sidebar">
+
+<div class="logo">
+<i class="fa-solid fa-microchip"></i>
+<h2>V-AGENT</h2>
+</div>
+
+<h3>Browser Automation</h3>
+
+<div class="form-item">
+<label>Voice Model</label>
+<select id="voice-select" class="api-input">
+<option value="female-yujie">Female Yujie</option>
+<option value="female-tianmei">Female Tianmei</option>
+<option value="male-qn-qingse">Male Qingse</option>
+</select>
+</div>
+
+<div class="form-item">
+<label>Automation API URL</label>
+<input id="local-api-url" class="api-input" value="http://localhost:3500">
+</div>
+
+<div class="form-item">
+<label>Browser Profile ID</label>
+<input id="browser-profile-id" class="api-input">
+</div>
+
+<button class="btn" onclick="saveSettings()">
+Save Settings
+</button>
+
+</aside>
+
+<main class="agent-main">
+
+<header class="workspace-header">
+
+<div class="status-indicator">
+<span class="pulse-dot" id="status-pulse"></span>
+<span id="agent-status-text">System Ready</span>
+</div>
+
+</header>
+
+<div class="avatar-canvas-wrapper">
+
+<svg id="avatar-svg" width="280" height="280" viewBox="0 0 400 400">
+<circle cx="200" cy="200" r="140" fill="#111827" stroke="#8b5cf6" stroke-width="3"/>
+<circle cx="150" cy="180" r="18" fill="#8b5cf6"/>
+<circle cx="250" cy="180" r="18" fill="#8b5cf6"/>
+<path d="M160 250 Q200 280 240 250" stroke="#8b5cf6" stroke-width="5" fill="none"/>
+</svg>
+
+<button id="btn-listen" class="btn-mic" onclick="toggleListening()">
+<i id="mic-icon" class="fa-solid fa-microphone"></i>
+</button>
+
+<p id="mic-label-text">
+Click to speak to Agent
+</p>
+
+<div id="audio-visualizer"></div>
+
+</div>
+
+<div class="console-card">
+<div id="console-logs" class="console-body"></div>
+</div>
+
+</main>
+
+</div>
+
+<div id="toast" class="toast-notification">
+Settings Saved
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
+```
