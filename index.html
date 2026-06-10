@@ -411,9 +411,9 @@ function initSpeech() {
 
   recognition = new SR();
   recognition.continuous = false;
-  recognition.interimResults = false;
+  recognition.interimResults = true;
   recognition.lang = 'en-US';
-  recognition.maxAlternatives = 1;
+  recognition.maxAlternatives = 3;
 
   recognition.onstart  = () => {
     isListening = true;
@@ -447,8 +447,16 @@ function initSpeech() {
   };
 
   recognition.onresult = (e) => {
-    const text = e.results[0][0].transcript;
+    // grab final result or best interim
+    let text = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        text = e.results[i][0].transcript.trim();
+      }
+    }
+    if (!text) return; // wait for final
     log('user', `You: "${text}"`);
+    recognition.stop();
     handleCommand(text);
   };
 }
@@ -717,4 +725,5 @@ function esc(s) {
 if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = ()=>{};
 </script>
 </body>
+</html>
 </html>
