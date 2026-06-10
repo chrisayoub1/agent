@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -406,14 +406,46 @@ function initSpeech() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { log('err','Speech recognition not supported. Use Chrome or Edge.'); return; }
 
+  // create ONE instance only — never recreate
+  if (recognition) return;
+
   recognition = new SR();
   recognition.continuous = false;
   recognition.interimResults = false;
   recognition.lang = 'en-US';
+  recognition.maxAlternatives = 1;
 
-  recognition.onstart  = () => { isListening=true;  setStatus('LISTENING','listening'); setMic(true);  log('sys','Listening...'); };
-  recognition.onend    = () => { isListening=false; setStatus('READY','');      setMic(false); };
-  recognition.onerror  = (e) => { log('err',`Mic error: ${e.error}`); setMic(false); setStatus('READY',''); };
+  recognition.onstart  = () => {
+    isListening = true;
+    setStatus('LISTENING','listening');
+    setMic(true);
+    log('sys','Listening...');
+  };
+
+  recognition.onend = () => {
+    isListening = false;
+    setMic(false);
+    // only reset status if not already speaking/working
+    const s = document.getElementById('status-txt').textContent;
+    if (s === 'LISTENING') setStatus('READY','');
+  };
+
+  recognition.onerror = (e) => {
+    isListening = false;
+    setMic(false);
+    let msg = '';
+    if (e.error === 'not-allowed')      msg = 'Microphone blocked. Click the lock icon and allow microphone access.';
+    else if (e.error === 'no-speech')   msg = 'No speech detected. Please try again.';
+    else if (e.error === 'network')     msg = 'Network error. Make sure you are on your HTTPS Vercel URL.';
+    else if (e.error === 'audio-capture') msg = 'No microphone found. Check your mic is connected.';
+    else if (e.error === 'aborted')     msg = 'Mic stopped. Click to try again.';
+    else msg = `Mic error: ${e.error}`;
+    log('err', msg);
+    setStatus('READY','');
+    // speak error only for important ones
+    if (!['aborted','no-speech'].includes(e.error)) speak(msg);
+  };
+
   recognition.onresult = (e) => {
     const text = e.results[0][0].transcript;
     log('user', `You: "${text}"`);
@@ -428,7 +460,12 @@ function toggleListening() {
   } else {
     if (audioPlayer) { audioPlayer.pause(); stopAnim(); }
     window.speechSynthesis.cancel();
-    recognition.start();
+    try {
+      recognition.start();
+    } catch(e) {
+      // already started — ignore
+      log('sys', 'Mic already active.');
+    }
   }
 }
 
