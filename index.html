@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>V-AGENT</title>
+<title>JARVIS — Voice Agent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -298,7 +298,7 @@ body {
 
 <!-- TOP -->
 <header class="topbar">
-  <div class="logo">V-AGENT</div>
+  <div class="logo">JARVIS</div>
   <div class="status-pill">
     <span class="dot" id="status-dot"></span>
     <span id="status-txt">READY</span>
@@ -361,7 +361,7 @@ body {
     <button id="btn-listen" onclick="toggleListening()">
       <i id="mic-icon" class="fa-solid fa-microphone"></i>
     </button>
-    <span id="mic-label">CLICK TO SPEAK</span>
+    <span id="mic-label">SAY "JARVIS" TO ACTIVATE</span>
   </div>
 
   <!-- visualizer -->
@@ -397,8 +397,12 @@ let currentTaskId = null;
 // ── INIT ─────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   initSpeech();
-  log('sys', 'V-AGENT online. Skyvern browser control ready.');
-  setTimeout(() => speak("Hello! I am your voice agent with full browser control. Tell me what to do and I will do it."), 800);
+  log('sys', 'V-AGENT online. Auto-listening mode active.');
+  setTimeout(() => {
+    speak("Hello. I am Jarvis, your personal voice agent. Say Jarvis followed by your command and I will take care of it.");
+    // auto start listening after greeting
+    setTimeout(() => startListening(), 3000);
+  }, 800);
 });
 
 // ── SPEECH RECOGNITION ──────────────────────────
@@ -410,7 +414,7 @@ function initSpeech() {
   if (recognition) return;
 
   recognition = new SR();
-  recognition.continuous = false;
+  recognition.continuous = true;
   recognition.interimResults = true;
   recognition.lang = 'en-US';
   recognition.maxAlternatives = 3;
@@ -425,9 +429,11 @@ function initSpeech() {
   recognition.onend = () => {
     isListening = false;
     setMic(false);
-    // only reset status if not already speaking/working
+    // auto restart unless agent is speaking or working
     const s = document.getElementById('status-txt').textContent;
-    if (s === 'LISTENING') setStatus('READY','');
+    if (!['SPEAKING','WORKING','THINKING'].includes(s)) {
+      setTimeout(() => startListening(), 1000);
+    }
   };
 
   recognition.onerror = (e) => {
@@ -442,38 +448,59 @@ function initSpeech() {
     else msg = `Mic error: ${e.error}`;
     log('err', msg);
     setStatus('READY','');
-    // speak error only for important ones
     if (!['aborted','no-speech'].includes(e.error)) speak(msg);
+    // auto restart after error
+    setTimeout(() => startListening(), 2000);
   };
 
   recognition.onresult = (e) => {
-    // grab final result or best interim
     let text = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
       if (e.results[i].isFinal) {
         text = e.results[i][0].transcript.trim();
       }
     }
-    if (!text) return; // wait for final
+    if (!text) return;
+
+    const lower = text.toLowerCase();
+
+    // must start with wake word "jarvis"
+    if (!lower.includes('jarvis')) {
+      log('sys', `[ignored] "${text}" — say "Jarvis" first`);
+      return;
+    }
+
+    // strip the wake word and get the actual command
+    const command = text.replace(/jarvis[,.]?/i, '').trim();
+    if (!command) {
+      speak("Yes? How can I help you?");
+      return;
+    }
+
     log('user', `You: "${text}"`);
     recognition.stop();
-    handleCommand(text);
+    handleCommand(command);
   };
+}
+
+function startListening() {
+  if (!recognition || isListening) return;
+  const s = document.getElementById('status-txt').textContent;
+  if (['SPEAKING','WORKING','THINKING'].includes(s)) return;
+  try {
+    recognition.start();
+  } catch(e) {
+    // already started
+  }
 }
 
 function toggleListening() {
   if (!recognition) { alert('Use Chrome or Edge for voice support.'); return; }
   if (isListening) {
     recognition.stop();
+    log('sys', 'Auto-listening paused. Click mic to resume.');
   } else {
-    if (audioPlayer) { audioPlayer.pause(); stopAnim(); }
-    window.speechSynthesis.cancel();
-    try {
-      recognition.start();
-    } catch(e) {
-      // already started — ignore
-      log('sys', 'Mic already active.');
-    }
+    startListening();
   }
 }
 
@@ -484,10 +511,10 @@ function handleCommand(raw) {
 
   // local quick commands — no browser needed
   if (t.includes('hello') || t.includes('hi') || t.includes('hey')) {
-    speak("Hey! I'm here. What do you need me to do?"); return;
+    speak("Hello. I am Jarvis. What do you need?"); return;
   }
   if (t.includes('your name') || t.includes('who are you')) {
-    speak("I'm V-Agent, your voice-controlled browser automation assistant."); return;
+    speak("I am Jarvis, your personal voice-controlled browser automation assistant."); return;
   }
   if (t.includes('what can you do') || t.includes('help')) {
     speak("I can control a real browser for you. Just tell me what to do. For example: search for AI tools on Google, go to LinkedIn and find remote jobs, or fill a form on any website."); return;
@@ -656,8 +683,17 @@ function speak(text) {
   if (chosen) u.voice = chosen;
 
   u.onstart = () => startAnim();
-  u.onend   = () => { stopAnim(); setStatus('READY',''); };
-  u.onerror = () => { stopAnim(); setStatus('READY',''); };
+  u.onend   = () => {
+    stopAnim();
+    setStatus('READY','');
+    // resume listening after agent finishes speaking
+    setTimeout(() => startListening(), 500);
+  };
+  u.onerror = () => {
+    stopAnim();
+    setStatus('READY','');
+    setTimeout(() => startListening(), 500);
+  };
 
   window.speechSynthesis.speak(u);
 }
@@ -683,12 +719,12 @@ function setMic(active) {
   const lbl  = document.getElementById('mic-label');
   if (active) {
     btn.classList.add('listening');
-    icon.className = 'fa-solid fa-microphone-slash';
-    lbl.textContent = 'LISTENING... CLICK TO STOP';
+    icon.className = 'fa-solid fa-microphone';
+    lbl.textContent = 'SAY "JARVIS" TO ACTIVATE';
   } else {
     btn.classList.remove('listening');
-    icon.className = 'fa-solid fa-microphone';
-    lbl.textContent = 'CLICK TO SPEAK';
+    icon.className = 'fa-solid fa-microphone-slash';
+    lbl.textContent = 'PAUSED — CLICK TO RESUME';
   }
 }
 
@@ -725,5 +761,4 @@ function esc(s) {
 if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = ()=>{};
 </script>
 </body>
-</html>
 </html>
